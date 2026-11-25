@@ -7,6 +7,8 @@ import os
 out = "./glacier_aftershave_labels.pdf"
 W, H = A4
 c = canvas.Canvas(out, pagesize=A4)
+c.setLineJoin(1)
+c.setLineCap(1)
 
 navy = HexColor("#233B50")
 slate = HexColor("#607E91")
@@ -38,20 +40,13 @@ def label_frame(x, y):
     c.setLineWidth(0.8)
     inset = 2.2 * mm
     arm = 2.2 * mm
+    p = c.beginPath()
     for xx, sx in [(x + inset, 1), (x + label_w - inset, -1)]:
         for yy, sy in [(y + inset, 1), (y + label_h - inset, -1)]:
-            c.line(
-                xx,
-                yy,
-                xx + sx * arm,
-                yy,
-            )
-            c.line(
-                xx,
-                yy,
-                xx,
-                yy + sy * arm,
-            )
+            p.moveTo(xx + sx * arm, yy)
+            p.lineTo(xx, yy)
+            p.lineTo(xx, yy + sy * arm)
+    c.drawPath(p)
 
 
 def wide_line(y):
@@ -79,40 +74,20 @@ c.line(
 )
 centered("INTENSE COOLING", cx, y + label_h - 19 * mm, "Helvetica-Bold", 7, slate)
 centered("MENTHOLATED AFTERSHAVE", cx, y + label_h - 23 * mm, "Helvetica", 6, navy)
+
 # Minimal stylized glacier motif, centered
 motif_y = y + 13.5 * mm
 c.setStrokeColor(ice)
 c.setLineWidth(1.0)
-c.line(
-    cx - 7 * mm,
-    motif_y,
-    cx - 3 * mm,
-    motif_y + 5 * mm,
-)
-c.line(
-    cx - 3 * mm,
-    motif_y + 5 * mm,
-    cx,
-    motif_y + 1.5 * mm,
-)
-c.line(
-    cx,
-    motif_y + 1.5 * mm,
-    cx + 3 * mm,
-    motif_y + 6 * mm,
-)
-c.line(
-    cx + 3 * mm,
-    motif_y + 6 * mm,
-    cx + 7 * mm,
-    motif_y,
-)
-c.line(
-    cx - 7 * mm,
-    motif_y,
-    cx + 7 * mm,
-    motif_y,
-)
+p = c.beginPath()
+p.moveTo(cx - 7 * mm, motif_y)
+p.lineTo(cx - 3 * mm, motif_y + 5 * mm)
+p.lineTo(cx, motif_y + 1.5 * mm)
+p.lineTo(cx + 3 * mm, motif_y + 6 * mm)
+p.lineTo(cx + 7 * mm, motif_y)
+p.close()
+c.drawPath(p)
+
 c.setStrokeColor(line)
 c.setLineWidth(0.45)
 c.line(
